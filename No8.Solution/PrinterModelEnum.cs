@@ -2,7 +2,7 @@
 {
     public enum PrinterNameEnum
     {
-        Canon,
-        Epson
+        CANON,
+        EPSON
     }
 }

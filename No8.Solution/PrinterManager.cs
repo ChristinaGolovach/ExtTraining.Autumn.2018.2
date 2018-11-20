@@ -20,8 +20,16 @@ namespace No8.Solution
             InitializationFactories();
         }
 
-        public  void Add (string name, string model)
+        public void Add(string name, string model)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException($"The {name} can not be null or empty.");
+            }
+            if (string.IsNullOrEmpty(model))
+            {
+                throw new ArgumentNullException($"The {model} can not be null or empty.");
+            }
 
             AddPrinter(name, model);
         }
@@ -32,9 +40,9 @@ namespace No8.Solution
             {
                 throw new ArgumentNullException($"The {nameof(printer)} can not be null.");
             }
-            if (fileName == null)
+            if (string.IsNullOrEmpty(fileName))
             {
-                throw new ArgumentNullException($"The {nameof(fileName)} can not be null.");
+                throw new ArgumentNullException($"The {nameof(fileName)} can not be null or empty.");
             }
 
             Log($" Printed on {printer.Name} - {printer.Model}");
@@ -47,49 +55,55 @@ namespace No8.Solution
             Log("Print finished");
         }
 
-        public IEnumerable<Printer> ShowModels(string printerName)        {
-            
-            IEnumerable<Printer> printers = Printers.Where(p => p.Name == printerName).ToList<Printer>();
+        public IEnumerable<Printer> ShowModels(string printerName)
+        {            
+            IEnumerable<Printer> printers = Printers.Where(p => p.Name == printerName).ToList();
 
             return printers;
         }
 
-        public  void Log(string s)
+        public void Log(string s)
         {
             File.AppendText("log.txt").Write(s);
         }
 
-        private  void InitializationFactories()
+        private void InitializationFactories()
         {
-            Factories = new List<PrinterFactory>() { new CanonFactory(), new EpsonFactory() };
-        }
-
-        private  void AddPrinter(string name, string model)
-        {
-            PrinterFactory factory = CheckExistsFactory(name);
-
-            if (factory == null)
+            foreach (var factory in FactoryRepository.Factories)
             {
-                throw new ArgumentException($"The printer {name} does not support.");
+                Factories.Add(factory);
             }
-
-            else if (CheckExistsPrinter(name, model))
-            {
-               Printer newPrinter = factory.CreatePrinter(model);
-               ((List<Printer>)Printers).Add(newPrinter);
-            }            
         }
 
-        private  bool CheckExistsPrinter(string name, string model)
+        private void AddPrinter(string name, string model)
+        {
+            PrinterFactory factory = CheckExistingFactory(name);
+
+            if (ReferenceEquals(factory, null))
+            {
+                throw new ArgumentException($"The printer {name} does not support. You can not add such printer.");
+            }
+            else if (!IsExistsPrinter(name, model))
+            {
+                throw new ArgumentException($"Printer {name} - {model} already exists.");
+            }
+            else
+            {
+                Printer newPrinter = factory.CreatePrinter(model);
+                ((List<Printer>)Printers).Add(newPrinter);
+            }
+        }
+
+        private bool IsExistsPrinter(string name, string model)
         {
            Printer printer = Printers.FirstOrDefault(p => p.Name == name && p.Model == model);
 
            return ReferenceEquals(printer, null);
         }
 
-        private  PrinterFactory CheckExistsFactory(string name)
+        private PrinterFactory CheckExistingFactory(string name)
         {
-            PrinterFactory printerFactory = Factories.FirstOrDefault(f => f.NameFactory.ToString() == name);
+            PrinterFactory printerFactory = Factories.FirstOrDefault(f => f.NameFactory.ToString() == name.ToUpperInvariant().Trim());
 
             return printerFactory;
         }

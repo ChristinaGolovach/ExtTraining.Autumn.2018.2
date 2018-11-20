@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using No8.Solution.Printers;
+﻿using No8.Solution.Printers;
 
 namespace No8.Solution.Factories
 {

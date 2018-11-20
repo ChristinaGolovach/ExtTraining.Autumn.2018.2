@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace No8.Solution.Printers
 {
@@ -10,14 +6,17 @@ namespace No8.Solution.Printers
     {
         private string name;
         private string model;
+        private string info;
 
         public string Name { get => name; }
         public string Model { get => model; }
+        public string Info { get => info; }
 
-        PrinterEventArgs(string name, string model)
+        public PrinterEventArgs(string name, string model, string info)
         {
             this.name = name;
             this.model = model;
+            this.info = info;
         }
     }
 }

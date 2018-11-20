@@ -15,7 +15,6 @@ namespace No8.Solution.Printers
         private string model;
 
         public string Name
-
         {
            get => name;
            protected internal set => name = value ?? throw new ArgumentNullException($"The {name} can not be null.");
@@ -32,6 +31,20 @@ namespace No8.Solution.Printers
             Model = model;
         }
 
+        //TODO make return string
+        public void Print(FileStream fs)
+        {
+            StartPrint();
+            PrintCore(fs);
+            EndPrint();
+        }
+
+        //TODO or make partiol implementation here
+        protected abstract void StartPrint();
+        protected abstract void EndPrint();
+
+        protected abstract string PrintCore(FileStream fs);
+
         protected virtual void OnPrintedWork(PrinterEventArgs e)
         {
             if (ReferenceEquals(e, null))
@@ -41,20 +54,5 @@ namespace No8.Solution.Printers
 
             PrintedWork?.Invoke(this, e);
         }
-
-        public void Print(FileStream fs)
-        {
-            StartPrint();
-            for (int i = 0; i < fs.Length; i++)
-            {
-                fs.ReadByte();
-                //
-                //Console.WriteLine(fs.ReadByte());
-            }
-            EndPrint();
-        }
-
-        protected abstract string StartPrint();
-        protected abstract string EndPrint();
     }
 }
