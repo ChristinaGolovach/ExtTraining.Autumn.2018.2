@@ -48,6 +48,7 @@
     <Compile Include="Printers\CanonPrinter.cs" />
     <Compile Include="Printers\EpsonPrinter.cs" />
     <Compile Include="Printers\Printer.cs" />
+    <Compile Include="Printers\PrinterEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

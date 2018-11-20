@@ -9,50 +9,62 @@ using No8.Solution.Factories;
 
 namespace No8.Solution
 {
-    public static class PrinterManager
+    public class PrinterManager
     {
-        public static IEnumerable<Printer> Printers { get; private set; }
-        private static List<PrinterFactory> Factories { get; set;}
+        public IEnumerable<Printer> Printers { get; private set; }
+        private List<PrinterFactory> Factories { get; set;}
 
-        static PrinterManager()
+        public PrinterManager()
         {
             Printers = new List<Printer>() { new EpsonPrinter("1111"), new EpsonPrinter("2222"), new CanonPrinter("1111")};
             InitializationFactories();
         }
 
-        public static void Add (string name, string model)
+        public  void Add (string name, string model)
         {
+
             AddPrinter(name, model);
         }
 
-        public static void Print(Printer printer, string fileName)
+        public void Print(Printer printer, string fileName)
         {
+            if (ReferenceEquals(printer, null))
+            {
+                throw new ArgumentNullException($"The {nameof(printer)} can not be null.");
+            }
+            if (fileName == null)
+            {
+                throw new ArgumentNullException($"The {nameof(fileName)} can not be null.");
+            }
+
             Log($" Printed on {printer.Name} - {printer.Model}");
+
             using (FileStream fileStream = File.OpenRead(fileName))
             {
                 printer.Print(fileStream);
-            }                  
+            }  
+            
             Log("Print finished");
         }
 
-        public static IEnumerable<Printer> ShowModels(PrinterNameEnum printer)
-        {
-            string name = printer.ToString();
-            IEnumerable<Printer> printers = Printers.Where(p => p.Name == name).ToList<Printer>();
+        public IEnumerable<Printer> ShowModels(string printerName)        {
+            
+            IEnumerable<Printer> printers = Printers.Where(p => p.Name == printerName).ToList<Printer>();
+
             return printers;
         }
 
-        public static void Log(string s)
+        public  void Log(string s)
         {
             File.AppendText("log.txt").Write(s);
         }
 
-        private static void InitializationFactories()
+        private  void InitializationFactories()
         {
             Factories = new List<PrinterFactory>() { new CanonFactory(), new EpsonFactory() };
         }
 
-        private static void AddPrinter(string name, string model)
+        private  void AddPrinter(string name, string model)
         {
             PrinterFactory factory = CheckExistsFactory(name);
 
@@ -68,14 +80,14 @@ namespace No8.Solution
             }            
         }
 
-        private static bool CheckExistsPrinter(string name, string model)
+        private  bool CheckExistsPrinter(string name, string model)
         {
            Printer printer = Printers.FirstOrDefault(p => p.Name == name && p.Model == model);
 
            return ReferenceEquals(printer, null);
         }
 
-        private static PrinterFactory CheckExistsFactory(string name)
+        private  PrinterFactory CheckExistsFactory(string name)
         {
             PrinterFactory printerFactory = Factories.FirstOrDefault(f => f.NameFactory.ToString() == name);
 
