@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace No8.Solution.Printers
 {
@@ -14,21 +10,13 @@ namespace No8.Solution.Printers
             Name = "Canon";
         }
 
-        protected override string PrintCore(FileStream fs)
+        protected override void PrintCore(FileStream fileStream)
         {
-            throw new NotImplementedException();
-        }
-
-        protected override void StartPrint()
-        {
-            string info = "";
-            OnPrintedWork(new PrinterEventArgs(Name, Model, info));
-        }
-
-        protected override void EndPrint()
-        {
-            string info = "";
-            OnPrintedWork(new PrinterEventArgs(Name, Model, info));
+            for (int i = 0; i < fileStream.Length; i++)
+            {
+                // simulate printing
+                Console.WriteLine(fileStream.ReadByte());
+            }
         }
     }
 }

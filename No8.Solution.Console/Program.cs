@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using No8.Solution;
 using No8.Solution.Printers;
+using No8.Solution.Logger;
 using System.Windows.Forms;
 
 namespace No8.Solution.Console
 {
     class Program
     {
-        static PrinterManager manager = new PrinterManager();
+        static PrinterManager manager = new PrinterManager(new Logger.Logger());
 
         [STAThread]
         static void Main(string[] args)

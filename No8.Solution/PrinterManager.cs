@@ -6,20 +6,43 @@ using System.Threading.Tasks;
 using System.IO;
 using No8.Solution.Printers;
 using No8.Solution.Factories;
+using No8.Solution.Logger;
 
 namespace No8.Solution
 {
     public class PrinterManager
     {
+        private ILogger logger;
+
         public IEnumerable<Printer> Printers { get; private set; }
+
         private List<PrinterFactory> Factories { get; set;}
 
-        public PrinterManager()
+        /// <summary>
+        /// Initializes a new instance of the PrinterManager class.
+        /// </summary>
+        public PrinterManager(ILogger logger)
         {
+            //TODO REpository think 
             Printers = new List<Printer>() { new EpsonPrinter("1111"), new EpsonPrinter("2222"), new CanonPrinter("1111")};
+
             InitializationFactories();
+
+            this.logger = logger;
         }
 
+        /// <summary>
+        /// Create a new printer.
+        /// </summary>
+        /// <param name="name">
+        /// The name of a printer.
+        /// </param>
+        /// <param name="model">
+        /// The model of a printer.
+        /// </param>
+        /// <exception cref="ArgumentNullException">The <paramref name="name"/>is null or empty.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref <paramref name="model"/>/>is null or empty.</exception>
+        /// <exception cref="ArgumentException"></exception>
         public void Add(string name, string model)
         {
             if (string.IsNullOrEmpty(name))
@@ -45,16 +68,15 @@ namespace No8.Solution
                 throw new ArgumentNullException($"The {nameof(fileName)} can not be null or empty.");
             }
 
-            Log($" Printed on {printer.Name} - {printer.Model}");
+            printer.PrintedWork += CommitPrinterEvent;
 
             using (FileStream fileStream = File.OpenRead(fileName))
             {
                 printer.Print(fileStream);
             }  
-            
-            Log("Print finished");
         }
 
+        //TODO rename method
         public IEnumerable<Printer> ShowModels(string printerName)
         {            
             IEnumerable<Printer> printers = Printers.Where(p => p.Name == printerName).ToList();
@@ -62,17 +84,32 @@ namespace No8.Solution
             return printers;
         }
 
-        public void Log(string s)
+        private void CommitPrinterEvent(object sender, PrinterEventArgs printerEventArgs)
         {
-            File.AppendText("log.txt").Write(s);
+            if (ReferenceEquals(sender, null))
+            {
+                throw new ArgumentNullException($"The {nameof(sender)} can not be null.");
+            }
+
+            if(ReferenceEquals(printerEventArgs, null))
+            {
+                throw new ArgumentNullException($"The {nameof(printerEventArgs)} can not be null.");
+            }
+
+            string printerEventInfo = $"{printerEventArgs.Name} - {printerEventArgs.Model} - {printerEventArgs.Info}";
+
+            logger.Log(printerEventInfo);
         }
 
         private void InitializationFactories()
         {
-            foreach (var factory in FactoryRepository.Factories)
-            {
-                Factories.Add(factory);
-            }
+            //TODO ASK ERROR NULL REFERENCE in thid dll when Console try load.
+            //foreach (var factory in FactoryRepository.Factories)
+            //{
+            //    Factories.Add(factory);
+            //}
+
+            Factories = new List<PrinterFactory>() { new CanonFactory(), new EpsonFactory() };
         }
 
         private void AddPrinter(string name, string model)

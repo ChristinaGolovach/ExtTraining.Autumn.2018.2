@@ -1,9 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace No8.Solution.Printers
 {
@@ -31,19 +27,21 @@ namespace No8.Solution.Printers
             Model = model;
         }
 
-        //TODO make return string
-        public void Print(FileStream fs)
+        public void Print(FileStream fileStream)
         {
+            if (fileStream == null)
+            {
+                throw new ArgumentNullException($"The {nameof(fileStream)} can not be null.");
+            }
+
             StartPrint();
-            PrintCore(fs);
+
+            PrintCore(fileStream);
+
             EndPrint();
         }
 
-        //TODO or make partiol implementation here
-        protected abstract void StartPrint();
-        protected abstract void EndPrint();
-
-        protected abstract string PrintCore(FileStream fs);
+        protected abstract void PrintCore(FileStream fs);
 
         protected virtual void OnPrintedWork(PrinterEventArgs e)
         {
@@ -53,6 +51,19 @@ namespace No8.Solution.Printers
             }
 
             PrintedWork?.Invoke(this, e);
+        }
+
+        private void StartPrint()
+        {
+            string info = $"Start work - {DateTime.Now}";
+            PrinterEventArgs eventArgs = new PrinterEventArgs(Name, Model, info);
+            OnPrintedWork(eventArgs);
+        }
+        private void EndPrint()
+        {
+            string info = $"End work - {DateTime.Now}";
+            PrinterEventArgs eventArgs = new PrinterEventArgs(Name, Model, info);
+            OnPrintedWork(eventArgs);
         }
     }
 }

@@ -42,7 +42,10 @@
   <ItemGroup>
     <Compile Include="Factories\CanonFactory.cs" />
     <Compile Include="Factories\EpsonFactory.cs" />
+    <Compile Include="Factories\FactoryRepository.cs" />
     <Compile Include="Factories\PrinterFactory.cs" />
+    <Compile Include="Logger\ILogger.cs" />
+    <Compile Include="Logger\Logger.cs" />
     <Compile Include="PrinterManager.cs" />
     <Compile Include="PrinterModelEnum.cs" />
     <Compile Include="Printers\CanonPrinter.cs" />
