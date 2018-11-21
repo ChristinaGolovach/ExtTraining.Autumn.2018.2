@@ -2,6 +2,9 @@
 
 namespace No8.Solution.Printers
 {
+    /// <summary>
+    /// Represent a class that describe printer event information. 
+    /// </summary>
     public class PrinterEventArgs : EventArgs
     {
         private string name;

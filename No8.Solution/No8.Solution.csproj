@@ -47,7 +47,7 @@
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\Logger.cs" />
     <Compile Include="PrinterManager.cs" />
-    <Compile Include="PrinterModelEnum.cs" />
+    <Compile Include="Printers\PrinterModelEnum.cs" />
     <Compile Include="Printers\CanonPrinter.cs" />
     <Compile Include="Printers\EpsonPrinter.cs" />
     <Compile Include="Printers\Printer.cs" />

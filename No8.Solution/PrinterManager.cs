@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using No8.Solution.Printers;
 using No8.Solution.Factories;
@@ -10,6 +8,9 @@ using No8.Solution.Logger;
 
 namespace No8.Solution
 {
+    /// <summary>
+    /// Represent a manager for work with printers.  
+    /// </summary>
     public class PrinterManager
     {
         private ILogger logger;
@@ -21,14 +22,18 @@ namespace No8.Solution
         /// <summary>
         /// Initializes a new instance of the PrinterManager class.
         /// </summary>
+        /// <param name="logger">
+        /// Type that implements ILogger. 
+        /// </param>
+        /// <exception cref="ArgumentNullException">The <paramref name="logger"/> is null.</exception>
         public PrinterManager(ILogger logger)
         {
-            //TODO REpository think 
+            this.logger = logger ?? throw new ArgumentNullException($"The {nameof(logger)} can not be null.");
+
+            //TODO Repository think 
             Printers = new List<Printer>() { new EpsonPrinter("1111"), new EpsonPrinter("2222"), new CanonPrinter("1111")};
 
-            InitializationFactories();
-
-            this.logger = logger;
+            InitializationFactories();           
         }
 
         /// <summary>
@@ -42,7 +47,8 @@ namespace No8.Solution
         /// </param>
         /// <exception cref="ArgumentNullException">The <paramref name="name"/>is null or empty.</exception>
         /// <exception cref="ArgumentNullException">The <paramref <paramref name="model"/>/>is null or empty.</exception>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentException">Printer with <paramref name="name"/> and <paramref name="model"/> already exists.</exception>
+        /// <exception cref="ArgumentException">Printer with <paramref name="name"/> does not support for add.</exception>
         public void Add(string name, string model)
         {
             if (string.IsNullOrEmpty(name))
@@ -57,6 +63,17 @@ namespace No8.Solution
             AddPrinter(name, model);
         }
 
+        /// <summary>
+        /// Print info from the given file.
+        /// </summary>
+        /// <param name="printer">
+        /// Printer for work.
+        /// </param>
+        /// <param name="fileName">
+        /// File for print.
+        /// </param>
+        /// <exception cref="ArgumentNullException">The <paramref name="printer"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="fileName"/> is nul or empty.</exception>
         public void Print(Printer printer, string fileName)
         {
             if (ReferenceEquals(printer, null))
@@ -76,12 +93,37 @@ namespace No8.Solution
             }  
         }
 
-        //TODO rename method
-        public IEnumerable<Printer> ShowModels(string printerName)
+        /// <summary>
+        /// Show available printer by given <paramref name="printerName"/>.
+        /// </summary>
+        /// <param name="printerName">
+        /// The name of printer.
+        /// </param>
+        /// <returns>
+        /// Collection of available printers or null.
+        /// </returns>
+        public IEnumerable<Printer> GetPrintersByName(string printerName)
         {            
             IEnumerable<Printer> printers = Printers.Where(p => p.Name == printerName).ToList();
 
             return printers;
+        }
+
+        /// <summary>
+        /// Commit user actions in file.
+        /// </summary>
+        /// <param name="info">
+        /// Info for commit.
+        /// </param>
+        /// <exception cref="ArgumentNullException">The <paramref name="info"/>is null or empty.</exception>
+        public void CommitUserEventInfo(string info)
+        {
+            if (string.IsNullOrEmpty(info))
+            {
+                throw new ArgumentNullException($"The {nameof(info)} can not be null or empty.");
+            }
+
+            logger.Log(info);
         }
 
         private void CommitPrinterEvent(object sender, PrinterEventArgs printerEventArgs)
@@ -100,7 +142,7 @@ namespace No8.Solution
 
             logger.Log(printerEventInfo);
         }
-
+        
         private void InitializationFactories()
         {
             //TODO ASK ERROR NULL REFERENCE in thid dll when Console try load.

@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using No8.Solution;
 using No8.Solution.Printers;
-using No8.Solution.Logger;
 using System.Windows.Forms;
 
 namespace No8.Solution.Console
@@ -16,14 +12,19 @@ namespace No8.Solution.Console
 
         [STAThread]
         static void Main(string[] args)
-        {       
+        {
+            Menu();
+        }
+
+        private static void Menu()
+        {
             System.Console.WriteLine("Select your choice:");
             System.Console.WriteLine("0:Exit");
             System.Console.WriteLine("1:Add new printer");
 
-            Dictionary<int, string> availablePrinterNames = ShowAvailablePrinters();          
+            Dictionary<int, string> availablePrinterNames = ShowAvailablePrinters();
 
-            var key = System.Console.ReadKey();           
+            var key = System.Console.ReadKey();
 
             while (key.Key != ConsoleKey.D0)
             {
@@ -57,14 +58,18 @@ namespace No8.Solution.Console
 
             Dictionary<int, string> availableModels = ShowAvailablePrinterModels(printerName);
 
-            string modelNumber = GetUserChoiceOfModel(availableModels);
-
+            string modelNumber = GetUserChoiceOfModel(availableModels);            
+            
             string fileName = ChoiceFile();
 
             Printer printer = manager.Printers.FirstOrDefault(p => p.Name == printerName && p.Model == modelNumber);
 
+            manager.CommitUserEventInfo($"User have chosen print for work");
+
+            //TODO Try-catch
             manager.Print(printer, fileName);
-            
+
+            Menu();            
         }
 
         private static void CreatePrinter()
@@ -77,7 +82,14 @@ namespace No8.Solution.Console
 
             string model = System.Console.ReadLine();
 
+            //TODO Try-catch 
             manager.Add(name, model);
+
+            manager.CommitUserEventInfo($"User create a new ptint {name} - {model}");
+
+            System.Console.WriteLine($"Printer {name} - {model} was added.");
+
+            Menu();
         }
         
         private static string ChoiceFile()
@@ -113,7 +125,7 @@ namespace No8.Solution.Console
         {
             int key = 1;
             int consoleKey = 1;
-            var printers = manager.ShowModels(printerName);
+            var printers = manager.GetPrintersByName(printerName);
 
             Dictionary<int, string> dictionaryModels = printers.OrderBy(p => p.Model).Select(p => p.Model).ToDictionary(model => key++);
 
@@ -151,7 +163,6 @@ namespace No8.Solution.Console
             }
 
             return modelNumber;
-
         }
     }
 }
